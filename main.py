@@ -1,11 +1,14 @@
+import pyautogui
+import threading
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.toast import ToastNotification
-from ttkbootstrap.validation import add_regex_validation
 
 option_keybind = "."
 global packed
 packed = 0
+global clicking
+clicking = False
 
 class main(ttk.Frame):
 
@@ -35,7 +38,8 @@ class main(ttk.Frame):
         adv_option_button = ttk.Button(
             instruction_master,
             text=adv_option_txt,
-            command=self.on_page
+            command=self.on_page,
+            state=DISABLED
         )
 
         adv_option_button.pack(side=RIGHT)
@@ -48,7 +52,18 @@ class main(ttk.Frame):
 
         self.table = self.create_table()
 
-    
+    def start_clicking_thread(self):
+        clicking_thread = threading.Thread(target=self.clicking_loop)
+        clicking_thread.start()
+
+    def clicking_loop(self):
+        while True:
+            if clicking:
+                print("clicking")
+                pyautogui.click()
+            else:
+                print("not clicking")
+
     def create_form_entry(self, label, variable):
         global form_field_label
         form_field_container = ttk.Frame(self)
@@ -105,8 +120,6 @@ class main(ttk.Frame):
             bootstyle=SUCCESS,
             width=6,
         )
-
-        
 
         submit_btn.pack(side=RIGHT, padx=5)
 
@@ -165,8 +178,6 @@ class main(ttk.Frame):
         self.final_score.set(meter.amountusedvar)
         final_score_input.configure(textvariable=meter.amountusedvar)
 
-
-    
     def create_table(self):
         coldata = [
             {"text": "Option Name"},
@@ -196,20 +207,27 @@ class main(ttk.Frame):
         settings(self)
 
     def on_submit(self):
+        global clicking
         global cancel_btn
         global submit_btn
         cancel_btn['state'] = NORMAL
         submit_btn['state'] = DISABLED
+        clicking = True
 
     def on_cancel(self):
+        global clicking
         global cancel_btn
         global submit_btn
         cancel_btn['state'] = DISABLED
         submit_btn['state'] = NORMAL
+        clicking = False
+
 
 class settings(ttk.Frame):
 
     def __init__(self, master_window):
+        global clicking
+        clicking = False
         super().__init__(master_window, padding=(20,10))
         self.pack(fill=BOTH, expand=YES)
         self.name = ttk.StringVar(value="")
@@ -246,7 +264,6 @@ class settings(ttk.Frame):
 
         self.create_buttonbox()
 
-    
     def create_form_entry(self, label, variable):
         form_field_container = ttk.Frame(self)
         form_field_container.pack(fill=X, expand=YES, pady=5)
@@ -259,7 +276,6 @@ class settings(ttk.Frame):
 
         return form_input
 
-    
     def create_buttonbox(self):
 
         global keybind_instruction
@@ -295,28 +311,31 @@ class settings(ttk.Frame):
         
         submit_btn.pack(side=RIGHT, padx=5)
 
-    def on_cancel():
+    def on_cancel(self):
         toast_update = ToastNotification(
-        title="Option update successful!",
-        message="Your data has been successfully updated.",
-        duration=3000,
+            title="Option update successful!",
+            message="Your data has been successfully updated.",
+            duration=3000,
         )
 
         toast_update.show_toast()
 
-    def on_submit():
+    def on_submit(self):
         toast_update = ToastNotification(
-        title="Option update successful!",
-        message="Your data has been successfully updated.",
-        duration=3000,
+            title="Option update successful!",
+            message="Your data has been successfully updated.",
+            duration=3000,
         )
 
         toast_update.show_toast()
 
 if __name__ == "__main__":
-
     app = ttk.Window("ClickQuick AutoClicker", "superhero", resizable=(False, False))
-    main(app)
+    main_instance = main(app)
+    
+    # Start the clicking thread
+    main_instance.start_clicking_thread()
+
     app.mainloop()
 else:
-    print("if __name__ == '__main__' Check failed. Plese obtain a legal copy of this program. \n If this was a mistake, please restart the program. \n #stopPirating")
+    print("if __name__ == '__main__' Check failed. Please obtain a legal copy of this program. \n If this was a mistake, please restart the program. \n Error Code 451")
