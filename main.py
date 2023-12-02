@@ -1,14 +1,41 @@
 import pyautogui
+import keyboard
 import threading
+import time
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.toast import ToastNotification
 
-option_keybind = "."
+option_keybind = ","
 global packed
 packed = 0
 global clicking
 clicking = False
+
+def on_key_event(e):
+    global clicking
+    if e.event_type == keyboard.KEY_DOWN and e.name == ',':
+        if clicking:
+            clicking = False
+            try:
+                cancel_btn['state'] = DISABLED
+                submit_btn['state'] = NORMAL
+            except KeyError:
+                print("we did actually register a keybind :D")
+            else:
+                print("we did actually register a keybind :D")
+        else:
+            clicking = True
+            try:
+                cancel_btn['state'] = NORMAL
+                submit_btn['state'] = DISABLED
+            except KeyError:
+                print("we did actually register a keybind :D")
+            else:
+                print("we did actually register a keybind :D")
+
+# Hook the event
+keyboard.hook(on_key_event)
 
 class main(ttk.Frame):
 
@@ -59,10 +86,11 @@ class main(ttk.Frame):
     def clicking_loop(self):
         while True:
             if clicking:
-                print("clicking")
+                time.sleep(1/(meter.amountusedvar.get()+5))
+#                print("clicking")
                 pyautogui.click()
-            else:
-                print("not clicking")
+#            else:
+#                print("not clicking")
 
     def create_form_entry(self, label, variable):
         global form_field_label
@@ -132,7 +160,7 @@ class main(ttk.Frame):
             metersize=150,
             padding=5,
             amounttotal=20,
-            amountused=10,
+            amountused=5,
             metertype="discrete",
             subtext="CPS",
             interactive=True,
@@ -143,7 +171,7 @@ class main(ttk.Frame):
         def check_meter():
             global packed
             try:
-                print("CHECKING METER")
+#                print("CHECKING METER")
                 zv = float(meter.amountusedvar.get())
                 if 1 <= zv <= 20:
                     zv = int(round(zv))  # Round to the nearest integer to remove decimal places
