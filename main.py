@@ -357,13 +357,10 @@ class settings(ttk.Frame):
 
         toast_update.show_toast()
 
-if __name__ == "__main__":
-    app = ttk.Window("ClickQuick AutoClicker", "superhero", resizable=(False, False))
-    main_instance = main(app)
-    
-    # Start the clicking thread
-    main_instance.start_clicking_thread()
+app = ttk.Window("ClickQuick AutoClicker", "superhero", resizable=(False, False))
+main_instance = main(app)
 
-    app.mainloop()
-else:
-    print("if __name__ == '__main__' Check failed. Please obtain a legal copy of this program. \n If this was a mistake, please restart the program. \n Error Code 451")
+# Start the clicking thread
+main_instance.start_clicking_thread()
+
+app.mainloop()
